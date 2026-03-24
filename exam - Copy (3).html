@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คลังข้อสอบ</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Noto+Serif+Thai:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e2230;
+    --border: #2a2f42;
+    --accent: #f0c060;
+    --accent2: #60b8f0;
+    --accent3: #a060f0;
+    --text: #e8eaf0;
+    --muted: #8890a8;
+    --success: #50d890;
+    --error: #f06060;
+    --radius: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(240,192,96,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(240,192,96,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,15,20,0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo {
+    font-family: 'Noto Serif Thai', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-right: auto;
+    letter-spacing: 1px;
+  }
+
+  .nav-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .nav-btn.primary {
+    background: var(--accent);
+    color: #111;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  .nav-btn.primary:hover { background: #e0b050; }
+
+  /* PAGES */
+  .page { display: none; padding: 32px 24px; max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+  .page.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* HOME */
+  .hero {
+    text-align: center;
+    padding: 60px 0 40px;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(240,192,96,0.12);
+    border: 1px solid rgba(240,192,96,0.3);
+    color: var(--accent);
+    font-size: 13px;
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+  .hero h1 {
+    font-family: 'Noto Serif Thai', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p { color: var(--muted); font-size: 17px; margin-bottom: 36px; }
+
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-gold { background: var(--accent); color: #111; }
+  .btn-gold:hover { background: #e0b050; transform: translateY(-1px); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin: 40px 0;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-num {
+    font-family: 'Noto Serif Thai', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label { color: var(--muted); font-size: 14px; margin-top: 4px; }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .cat-card:hover { border-color: var(--accent2); transform: translateY(-2px); background: var(--surface2); }
+  .cat-icon { font-size: 32px; }
+  .cat-name { font-weight: 700; font-size: 16px; }
+  .cat-count { color: var(--muted); font-size: 13px; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Noto Serif Thai', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* SEARCH BAR */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { outline: none; border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+
+  select.search-input {
+    cursor: pointer;
+    max-width: 180px;
+  }
+
+  /* EXAM LIST */
+  .exam-list { display: flex; flex-direction: column; gap: 12px; }
+  .exam-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .exam-card:hover { border-color: var(--accent2); background: var(--surface2); }
+  .exam-badge {
+    width: 48px; height: 48px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .badge-uni { background: rgba(96,184,240,0.15); }
+  .badge-mid { background: rgba(240,192,96,0.15); }
+  .badge-gov { background: rgba(160,96,240,0.15); }
+
+  .exam-info { flex: 1; }
+  .exam-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .exam-meta { color: var(--muted); font-size: 13px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .exam-meta span { display: flex; align-items: center; gap: 4px; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .tag-uni { background: rgba(96,184,240,0.15); color: var(--accent2); }
+  .tag-mid { background: rgba(240,192,96,0.15); color: var(--accent); }
+  .tag-gov { background: rgba(160,96,240,0.15); color: var(--accent3); }
+
+  .exam-action { flex-shrink: 0; }
+
+  /* MODAL EXAM */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 200;
+    backdrop-filter: blur(4px);
+    padding: 24px;
+    overflow-y: auto;
+  }
+  .modal-overlay.active { display: flex; align-items: flex-start; justify-content: center; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 760px;
+    padding: 32px;
+    position: relative;
+    animation: fadeIn 0.2s ease;
+    margin: auto;
+  }
+  .modal-close {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--error); }
+
+  /* QUIZ */
+  .quiz-header { margin-bottom: 28px; }
+  .quiz-title { font-family: 'Noto Serif Thai', serif; font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .quiz-progress-bar {
+    height: 4px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-top: 16px;
+    overflow: hidden;
+  }
+  .quiz-progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  .question-num {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice-btn {
+    padding: 14px 18px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent2); background: rgba(96,184,240,0.08); }
+  .choice-btn.correct { border-color: var(--success) !important; background: rgba(80,216,144,0.1) !important; color: var(--success); }
+  .choice-btn.wrong { border-color: var(--error) !important; background: rgba(240,96,96,0.1) !important; color: var(--error); }
+  .choice-letter {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .explanation-box {
+    margin-top: 20px;
+    padding: 16px 20px;
+    background: rgba(240,192,96,0.08);
+    border: 1px solid rgba(240,192,96,0.2);
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    display: none;
+  }
+  .explanation-box.show { display: block; animation: fadeIn 0.3s ease; }
+  .explanation-box strong { color: var(--accent); }
+
+  .quiz-nav { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+  /* SCORE */
+  .score-card {
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .score-ring {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    border: 6px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-family: 'Noto Serif Thai', serif;
+    font-size: 36px;
+    font-weight: 700;
+    position: relative;
+  }
+  .score-ring.pass { border-color: var(--success); color: var(--success); }
+  .score-ring.fail { border-color: var(--error); color: var(--error); }
+
+  /* UPLOAD FORM */
+  .form-group { margin-bottom: 20px; }
+  .form-label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: var(--muted); }
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { outline: none; border-color: var(--accent); }
+  textarea.form-input { resize: vertical; min-height: 100px; }
+
+  .question-builder { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
+  .question-builder-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .qb-num { font-weight: 700; color: var(--accent); }
+  .btn-remove { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+  .btn-remove:hover { border-color: var(--error); color: var(--error); }
+
+  .choices-input { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .choice-row { display: flex; gap: 8px; align-items: center; }
+  .choice-row input[type="radio"] { accent-color: var(--accent); width: 16px; height: 16px; flex-shrink: 0; }
+  .choice-row .form-input { margin: 0; }
+
+  .btn-add-q {
+    width: 100%;
+    padding: 12px;
+    background: rgba(240,192,96,0.08);
+    border: 1px dashed rgba(240,192,96,0.3);
+    border-radius: 10px;
+    color: var(--accent);
+    font-family: 'Sarabun', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+  }
+  .btn-add-q:hover { background: rgba(240,192,96,0.15); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 14px;
+    z-index: 999;
+    display: none;
+    animation: slideUp 0.3s ease;
+  }
+  .toast.show { display: block; }
+  .toast.success { border-color: var(--success); color: var(--success); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 16px; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+  @media (max-width: 600px) {
+    nav { padding: 0 12px; gap: 4px; }
+    .nav-btn { padding: 6px 12px; font-size: 13px; }
+    .page { padding: 24px 16px; }
+    .modal { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">📚 คลังข้อสอบ</div>
+  <button class="nav-btn active" onclick="showPage('home')">หน้าหลัก</button>
+  <button class="nav-btn" onclick="showPage('browse')">ค้นหา</button>
+  <button class="nav-btn primary" onclick="showPage('upload')">+ เพิ่มข้อสอบ</button>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-tag">OPEN EXAM BANK</div>
+    <h1>คลังข้อสอบเก่า<br><span>ครบทุกระดับ</span></h1>
+    <p>รวบรวมข้อสอบมัธยม มหาวิทยาลัย และสอบราชการ<br>พร้อมเฉลยและคำอธิบายละเอียด</p>
+    <div class="hero-actions">
+      <button class="btn btn-gold" onclick="showPage('browse')">🔍 ค้นหาข้อสอบ</button>
+      <button class="btn btn-outline" onclick="showPage('upload')">✏️ เพิ่มข้อสอบ</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats-display"></div>
+
+  <div class="section-title">หมวดหมู่</div>
+  <div class="category-grid">
+    <div class="cat-card" onclick="filterAndBrowse('มัธยม')">
+      <div class="cat-icon">📗</div>
+      <div class="cat-name">มัธยมศึกษา</div>
+      <div class="cat-count" id="cnt-mid">0 ชุด</div>
+    </div>
+    <div class="cat-card" onclick="filterAndBrowse('มหาวิทยาลัย')">
+      <div class="cat-icon">🎓</div>
+      <div class="cat-name">มหาวิทยาลัย</div>
+      <div class="cat-count" id="cnt-uni">0 ชุด</div>
+    </div>
+    <div class="cat-card" onclick="filterAndBrowse('ราชการ')">
+      <div class="cat-icon">🏛️</div>
+      <div class="cat-name">สอบราชการ / ก.พ.</div>
+      <div class="cat-count" id="cnt-gov">0 ชุด</div>
+    </div>
+  </div>
+
+  <div style="margin-top:40px">
+    <div class="section-title">เพิ่มล่าสุด</div>
+    <div class="exam-list" id="recent-list"></div>
+  </div>
+</div>
+
+<!-- BROWSE PAGE -->
+<div id="page-browse" class="page">
+  <div class="section-title">ค้นหาข้อสอบ</div>
+  <div class="search-bar">
+    <input type="text" class="search-input" id="search-text" placeholder="🔍 ค้นหาชื่อข้อสอบ วิชา..." oninput="renderBrowse()">
+    <select class="search-input" id="search-level" onchange="renderBrowse()">
+      <option value="">ทุกระดับ</option>
+      <option value="มัธยม">มัธยม</option>
+      <option value="มหาวิทยาลัย">มหาวิทยาลัย</option>
+      <option value="ราชการ">ราชการ / ก.พ.</option>
+    </select>
+    <select class="search-input" id="search-subject" onchange="renderBrowse()">
+      <option value="">ทุกวิชา</option>
+    </select>
+  </div>
+  <div class="exam-list" id="browse-list"></div>
+</div>
+
+<!-- UPLOAD PAGE -->
+<div id="page-upload" class="page">
+  <div class="section-title">เพิ่มข้อสอบใหม่</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px;">
+    <div class="form-group">
+      <label class="form-label">ชื่อชุดข้อสอบ *</label>
+      <input type="text" class="form-input" id="f-title" placeholder="เช่น PAT1 ปี 2566 รอบที่ 1">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label class="form-label">ระดับ *</label>
+        <select class="form-input" id="f-level">
+          <option value="มัธยม">มัธยมศึกษา</option>
+          <option value="มหาวิทยาลัย">มหาวิทยาลัย</option>
+          <option value="ราชการ">ราชการ / ก.พ.</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">วิชา *</label>
+        <input type="text" class="form-input" id="f-subject" placeholder="เช่น คณิตศาสตร์, ภาษาไทย">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">ปีที่สอบ</label>
+      <input type="text" class="form-input" id="f-year" placeholder="เช่น 2566">
+    </div>
+
+    <div style="margin:28px 0 16px;font-family:'Noto Serif Thai',serif;font-size:18px;font-weight:700;">ข้อสอบ</div>
+    <div id="questions-container"></div>
+    <button class="btn-add-q" onclick="addQuestion()">+ เพิ่มข้อ</button>
+    <button class="btn btn-gold" style="width:100%;padding:14px;" onclick="saveExam()">💾 บันทึกข้อสอบ</button>
+  </div>
+</div>
+
+<!-- QUIZ MODAL -->
+<div class="modal-overlay" id="quiz-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="quiz-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== DATA ==========
+let exams = JSON.parse(localStorage.getItem('exambank_exams') || '[]');
+
+// seed data if empty
+if (exams.length === 0) {
+  exams = [
+    {
+      id: 1, title: 'PAT1 คณิตศาสตร์ ปี 2566', level: 'มหาวิทยาลัย', subject: 'คณิตศาสตร์', year: '2566',
+      questions: [
+        { q: 'ถ้า f(x) = 2x² - 3x + 1 แล้ว f(3) มีค่าเท่าไร', choices: ['8','10','12','14'], answer: 1, explain: 'f(3) = 2(9) - 3(3) + 1 = 18 - 9 + 1 = 10' },
+        { q: 'ผลลัพธ์ของ log₂(32) คือข้อใด', choices: ['4','5','6','7'], answer: 1, explain: '2⁵ = 32 ดังนั้น log₂(32) = 5' },
+        { q: 'สมการ x² - 5x + 6 = 0 มีรากคือ', choices: ['x=1,6','x=2,3','x=1,5','x=3,4'], answer: 1, explain: '(x-2)(x-3)=0 ดังนั้น x=2 หรือ x=3' }
+      ]
+    },
+    {
+      id: 2, title: 'O-NET ภาษาไทย ม.6 ปี 2565', level: 'มัธยม', subject: 'ภาษาไทย', year: '2565',
+      questions: [
+        { q: 'ข้อใดคือการใช้คำราชาศัพท์ถูกต้อง', choices: ['พระเจ้าอยู่หัวเสวยข้าว','พระเจ้าอยู่หัวกินข้าว','พระเจ้าอยู่หัวทานข้าว','พระเจ้าอยู่หัวรับประทานข้าว'], answer: 0, explain: '"เสวย" เป็นคำราชาศัพท์ของ "กิน/รับประทาน" ใช้สำหรับพระมหากษัตริย์และพระบรมวงศ์ชั้นสูง' },
+        { q: 'สำนวน "น้ำขึ้นให้รีบตัก" หมายถึงข้อใด', choices: ['ให้ทำงานเร็ว','ให้รีบเก็บน้ำ','ให้รีบใช้โอกาสที่มี','ให้ขยันทำงาน'], answer: 2, explain: 'หมายถึงเมื่อมีโอกาสดีควรรีบใช้ประโยชน์ก่อนที่โอกาสนั้นจะหมดไป' }
+      ]
+    },
+    {
+      id: 3, title: 'ก.พ. ภาค ก. ปี 2566 ความสามารถทั่วไป', level: 'ราชการ', subject: 'ความสามารถทั่วไป', year: '2566',
+      questions: [
+        { q: 'อนุกรม 2, 6, 12, 20, 30, ... ลำดับถัดไปคือ', choices: ['40','42','44','46'], answer: 1, explain: 'ผลต่าง: 4,6,8,10,12 → ลำดับถัดไป = 30+12 = 42' },
+        { q: 'ถ้า A แล่นเร็วกว่า B และ B แล่นเร็วกว่า C แล้ว ข้อใดถูกต้อง', choices: ['C แล่นเร็วกว่า A','A แล่นเร็วกว่า C','B แล่นเร็วกว่า A','C แล่นเร็วกว่า B'], answer: 1, explain: 'จาก A > B และ B > C จึงสรุปได้ว่า A > C คือ A แล่นเร็วกว่า C' }
+      ]
+    }
+  ];
+  localStorage.setItem('exambank_exams', JSON.stringify(exams));
+}
+
+let currentExam = null;
+let currentQ = 0;
+let answers = [];
+let qCount = 0;
+
+// ========== NAVIGATION ==========
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => { if (b.textContent.includes(name === 'home' ? 'หน้าหลัก' : name === 'browse' ? 'ค้นหา' : 'เพิ่ม')) b.classList.add('active'); });
+  if (name === 'home') renderHome();
+  if (name === 'browse') renderBrowse();
+  if (name === 'upload') initUpload();
+}
+
+function filterAndBrowse(level) {
+  showPage('browse');
+  document.getElementById('search-level').value = level;
+  renderBrowse();
+}
+
+// ========== HOME ==========
+function renderHome() {
+  // stats
+  document.getElementById('stats-display').innerHTML = `
+    <div class="stat-card"><span class="stat-num">${exams.length}</span><div class="stat-label">ชุดข้อสอบ</div></div>
+    <div class="stat-card"><span class="stat-num">${exams.reduce((s,e)=>s+e.questions.length,0)}</span><div class="stat-label">ข้อสอบทั้งหมด</div></div>
+    <div class="stat-card"><span class="stat-num">${[...new Set(exams.map(e=>e.subject))].length}</span><div class="stat-label">วิชา</div></div>
+  `;
+  document.getElementById('cnt-mid').textContent = exams.filter(e=>e.level==='มัธยม').length + ' ชุด';
+  document.getElementById('cnt-uni').textContent = exams.filter(e=>e.level==='มหาวิทยาลัย').length + ' ชุด';
+  document.getElementById('cnt-gov').textContent = exams.filter(e=>e.level==='ราชการ').length + ' ชุด';
+
+  const recent = [...exams].reverse().slice(0,3);
+  document.getElementById('recent-list').innerHTML = recent.map(e => examCardHTML(e)).join('') || '<div class="empty-state"><div class="empty-icon">📭</div>ยังไม่มีข้อสอบ</div>';
+}
+
+function examCardHTML(exam) {
+  const icons = { มัธยม:'📗', มหาวิทยาลัย:'🎓', ราชการ:'🏛️' };
+  const badgeClass = { มัธยม:'badge-mid', มหาวิทยาลัย:'badge-uni', ราชการ:'badge-gov' };
+  const tagClass = { มัธยม:'tag-mid', มหาวิทยาลัย:'tag-uni', ราชการ:'tag-gov' };
+  return `<div class="exam-card" onclick="startQuiz(${exam.id})">
+    <div class="exam-badge ${badgeClass[exam.level]}">${icons[exam.level]||'📄'}</div>
+    <div class="exam-info">
+      <div class="exam-title">${exam.title}</div>
+      <div class="exam-meta">
+        <span><span class="tag ${tagClass[exam.level]}">${exam.level}</span></span>
+        <span>📚 ${exam.subject}</span>
+        ${exam.year ? `<span>📅 ${exam.year}</span>` : ''}
+        <span>❓ ${exam.questions.length} ข้อ</span>
+      </div>
+    </div>
+    <div class="exam-action"><button class="btn btn-gold" style="padding:8px 18px;font-size:14px;" onclick="event.stopPropagation();startQuiz(${exam.id})">ทำข้อสอบ →</button></div>
+  </div>`;
+}
+
+// ========== BROWSE ==========
+function renderBrowse() {
+  const q = document.getElementById('search-text').value.toLowerCase();
+  const level = document.getElementById('search-level').value;
+  const subject = document.getElementById('search-subject').value;
+
+  // populate subject filter
+  const subjects = [...new Set(exams.map(e=>e.subject))];
+  const subSel = document.getElementById('search-subject');
+  const curVal = subSel.value;
+  subSel.innerHTML = '<option value="">ทุกวิชา</option>' + subjects.map(s=>`<option value="${s}" ${s===curVal?'selected':''}>${s}</option>`).join('');
+
+  let filtered = exams.filter(e => {
+    const matchQ = !q || e.title.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q);
+    const matchL = !level || e.level === level;
+    const matchS = !subject || e.subject === subject;
+    return matchQ && matchL && matchS;
+  });
+
+  const el = document.getElementById('browse-list');
+  if (filtered.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>ไม่พบข้อสอบที่ค้นหา</div>';
+  } else {
+    el.innerHTML = filtered.map(e => examCardHTML(e)).join('');
+  }
+}
+
+// ========== QUIZ ==========
+function startQuiz(id) {
+  currentExam = exams.find(e => e.id === id);
+  if (!currentExam) return;
+  currentQ = 0;
+  answers = new Array(currentExam.questions.length).fill(-1);
+  document.getElementById('quiz-modal').classList.add('active');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = currentExam.questions[currentQ];
+  const total = currentExam.questions.length;
+  const letters = ['ก','ข','ค','ง','จ','ฉ'];
+  const progress = ((currentQ) / total * 100).toFixed(0);
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-header">
+      <div class="quiz-title">${currentExam.title}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+        <span style="color:var(--muted);font-size:13px;">ข้อ ${currentQ+1} / ${total}</span>
+        <span style="color:var(--muted);font-size:13px;">${progress}%</span>
+      </div>
+      <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${progress}%"></div></div>
+    </div>
+    <div class="question-num">ข้อที่ ${currentQ + 1}</div>
+    <div class="question-text">${q.q}</div>
+    <div class="choices" id="choices-container">
+      ${q.choices.map((c,i) => `
+        <button class="choice-btn ${answers[currentQ]===i ? (i===q.answer?'correct':'wrong') : ''}" 
+          id="choice-${i}" onclick="selectAnswer(${i})" ${answers[currentQ]!==-1?'disabled':''}>
+          <span class="choice-letter">${letters[i]||i+1}</span>${c}
+        </button>`).join('')}
+    </div>
+    <div class="explanation-box ${answers[currentQ]!==-1?'show':''}" id="explain-box">
+      <strong>💡 คำอธิบาย:</strong> ${q.explain || 'ไม่มีคำอธิบาย'}
+    </div>
+    <div class="quiz-nav">
+      ${currentQ > 0 ? `<button class="btn btn-outline" onclick="prevQuestion()">← ก่อนหน้า</button>` : ''}
+      ${currentQ < total - 1 
+        ? `<button class="btn btn-gold" onclick="nextQuestion()" ${answers[currentQ]===-1?'disabled':''}>ถัดไป →</button>` 
+        : `<button class="btn btn-gold" onclick="showScore()" ${answers[currentQ]===-1?'disabled':''}>ดูผลสอบ 🏆</button>`}
+    </div>
+  `;
+}
+
+function selectAnswer(i) {
+  if (answers[currentQ] !== -1) return;
+  answers[currentQ] = i;
+  const q = currentExam.questions[currentQ];
+  document.querySelectorAll('.choice-btn').forEach((btn, idx) => {
+    btn.disabled = true;
+    if (idx === q.answer) btn.classList.add('correct');
+    else if (idx === i) btn.classList.add('wrong');
+  });
+  document.getElementById('explain-box').classList.add('show');
+  document.querySelectorAll('.quiz-nav button').forEach(b => b.disabled = false);
+}
+
+function nextQuestion() {
+  if (currentQ < currentExam.questions.length - 1) { currentQ++; renderQuestion(); }
+}
+function prevQuestion() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function showScore() {
+  const total = currentExam.questions.length;
+  const correct = answers.filter((a,i) => a === currentExam.questions[i].answer).length;
+  const pct = Math.round(correct/total*100);
+  const pass = pct >= 60;
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="score-card">
+      <div class="score-ring ${pass?'pass':'fail'}">${pct}%</div>
+      <h2 style="font-family:'Noto Serif Thai',serif;font-size:24px;margin-bottom:8px;">${pass?'🎉 ผ่านเกณฑ์!':'💪 ลองอีกครั้ง!'}</h2>
+      <p style="color:var(--muted);margin-bottom:24px;">ตอบถูก ${correct} จาก ${total} ข้อ</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <button class="btn btn-gold" onclick="reviewAnswers()">📝 ทบทวนคำตอบ</button>
+        <button class="btn btn-outline" onclick="startQuiz(${currentExam.id})">🔄 ทำใหม่</button>
+        <button class="btn btn-outline" onclick="closeModal()">✕ ปิด</button>
+      </div>
+    </div>
+  `;
+}
+
+function reviewAnswers() {
+  currentQ = 0;
+  renderQuestion();
+}
+
+function closeModal() {
+  document.getElementById('quiz-modal').classList.remove('active');
+}
+
+// ========== UPLOAD ==========
+function initUpload() {
+  qCount = 0;
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-subject').value = '';
+  document.getElementById('f-year').value = '';
+  document.getElementById('questions-container').innerHTML = '';
+  addQuestion();
+}
+
+function addQuestion() {
+  qCount++;
+  const n = qCount;
+  const div = document.createElement('div');
+  div.className = 'question-builder';
+  div.id = `qb-${n}`;
+  div.innerHTML = `
+    <div class="question-builder-header">
+      <span class="qb-num">ข้อที่ ${n}</span>
+      <button class="btn-remove" onclick="removeQuestion(${n})">ลบ</button>
+    </div>
+    <div class="form-group" style="margin-bottom:12px;">
+      <label class="form-label">คำถาม *</label>
+      <textarea class="form-input" id="q-text-${n}" placeholder="พิมพ์คำถามที่นี่..." rows="2"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom:8px;">
+      <label class="form-label">ตัวเลือก (เลือก ● ข้อที่ถูกต้อง) *</label>
+      <div class="choices-input" id="choices-${n}">
+        ${[0,1,2,3].map(i=>`
+          <div class="choice-row">
+            <input type="radio" name="ans-${n}" value="${i}" ${i===0?'checked':''}>
+            <input type="text" class="form-input" id="c-${n}-${i}" placeholder="ตัวเลือก ${['ก','ข','ค','ง'][i]}">
+          </div>`).join('')}
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">คำอธิบายเฉลย</label>
+      <input type="text" class="form-input" id="q-exp-${n}" placeholder="อธิบายเหตุผลของคำตอบที่ถูกต้อง">
+    </div>
+  `;
+  document.getElementById('questions-container').appendChild(div);
+}
+
+function removeQuestion(n) {
+  const el = document.getElementById(`qb-${n}`);
+  if (el) el.remove();
+}
+
+function saveExam() {
+  const title = document.getElementById('f-title').value.trim();
+  const level = document.getElementById('f-level').value;
+  const subject = document.getElementById('f-subject').value.trim();
+  const year = document.getElementById('f-year').value.trim();
+
+  if (!title || !subject) { showToast('กรุณากรอกชื่อข้อสอบและวิชา', 'error'); return; }
+
+  const qbs = document.querySelectorAll('.question-builder');
+  const questions = [];
+  let valid = true;
+
+  qbs.forEach(qb => {
+    const n = qb.id.replace('qb-','');
+    const qText = document.getElementById(`q-text-${n}`).value.trim();
+    if (!qText) { valid = false; return; }
+    const choices = [0,1,2,3].map(i => document.getElementById(`c-${n}-${i}`).value.trim());
+    if (choices.some(c=>!c)) { valid = false; return; }
+    const answerEl = document.querySelector(`input[name="ans-${n}"]:checked`);
+    const answer = answerEl ? parseInt(answerEl.value) : 0;
+    const explain = document.getElementById(`q-exp-${n}`).value.trim();
+    questions.push({ q: qText, choices, answer, explain });
+  });
+
+  if (!valid || questions.length === 0) { showToast('กรุณากรอกข้อมูลข้อสอบให้ครบ', 'error'); return; }
+
+  const newExam = {
+    id: Date.now(),
+    title, level, subject, year, questions
+  };
+  exams.push(newExam);
+  localStorage.setItem('exambank_exams', JSON.stringify(exams));
+  showToast('บันทึกข้อสอบสำเร็จ! 🎉', 'success');
+  setTimeout(() => showPage('home'), 1200);
+}
+
+// ========== TOAST ==========
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast show ${type}`;
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ========== INIT ==========
+renderHome();
+
+// close modal on overlay click
+document.getElementById('quiz-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
